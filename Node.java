@@ -7,24 +7,50 @@ public class Node {
     String move;
     int depth;
     int cost;
+    int sum;
 
 
-    public Node(Node parent, String move, int depth, int cost)
+    public Node(Node parent, String move, int depth, int cost,int[][] goal)
     {
         this.parent=parent;
         this.move=move;
         this.state=this.calculateState(parent,move);
         this.depth=depth;
         this.cost=cost;
-
+        this.sum=getManhattanSum(this.state,goal);
     }
-    public Node(Node parent, String move, int[][] state, int depth, int cost)
+
+    public Node(Node parent, String move, int[][] state, int depth, int cost,int[][] goal)
     {
         this.parent=parent;
         this.move=move;
         this.state=state;
         this.depth=depth;
         this.cost=cost;
+        this.sum=getManhattanSum(this.state,goal);
+    }
+
+    public int getManhattanSum(int[][] current, int[][] goal)
+    {
+        int i,j,k,l,sum=0;
+        for(i=0; i<current.length;i++) {
+            for (j = 0; j < current.length; j++) {
+                if (current[i][j] != 0 && current[i][j] != 42) {
+                    for (k = 0; k < goal.length; k++) {
+                        for (l = 0; l < goal.length; l++) {
+                            if (current[i][j] == goal[k][l]) {
+                                sum += Math.abs(i - k) + Math.abs(j - l);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return sum;
+    }
+    public int getSum()
+    {
+        return this.sum;
     }
     public Node getParent()
     {
@@ -48,11 +74,11 @@ public class Node {
         j=p.getJ();
         if(move.equals("up"))
         {
-            if((i-1)>=0)
+            if((j-1)>=0)
             {
                 aux=new_state[i][j];
-                new_state[i][j]=new_state[i-1][j];
-                new_state[i-1][j]=aux;
+                new_state[i][j]=new_state[i][j-1];
+                new_state[i][j-1]=aux;
 
             }
             else
@@ -62,11 +88,11 @@ public class Node {
         } else{
             if(move.equals("down"))
             {
-                if((i+1)<new_state.length)
+                if((j+1)<new_state.length)
                 {
                     aux=new_state[i][j];
-                    new_state[i][j]=new_state[i+1][j];
-                    new_state[i+1][j]=aux;
+                    new_state[i][j]=new_state[i][j+1];
+                    new_state[i][j+1]=aux;
                 }
                 else
                 {
@@ -75,11 +101,11 @@ public class Node {
             } else{
                 if(move.equals("left"))
                 {
-                    if((j-1)>=0)
+                    if((i-1)>=0)
                     {
                         aux=new_state[i][j];
-                        new_state[i][j]=new_state[j-1][j];
-                        new_state[j-1][j]=aux;
+                        new_state[i][j]=new_state[i-1][j];
+                        new_state[i-1][j]=aux;
                     }
                     else
                     {
@@ -88,10 +114,10 @@ public class Node {
 
                 }else{
                     if(move.equals("right")) {
-                        if (new_state[i][j] == 1 && (j + 1) < new_state.length) {
+                        if ((i + 1) < new_state.length) {
                             aux = new_state[i][j];
-                            new_state[i][j] = new_state[j + 1][j];
-                            new_state[j + 1][j] = aux;
+                            new_state[i][j] = new_state[i + 1][j];
+                            new_state[i + 1][j] = aux;
                         } else {
                             new_state = null;
                         }
@@ -109,6 +135,9 @@ public class Node {
     public int getDepth()
     {
         return this.depth;
+    }
+    public String getMove(){
+        return this.move;
     }
 
     public Pair getActorPosition(int[][] state)
